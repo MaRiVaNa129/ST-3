@@ -1,10 +1,12 @@
 // Copyright 2021 GHA Test Team
 
 #include "TimedDoor.h"
+
 #include <chrono>
 #include <cstdint>
 #include <stdexcept>
 #include <thread>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -13,42 +15,42 @@ using ::testing::Mock;
 using ::testing::Return;
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class MockDoor : public Door {
-public:
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     void SetUp() override {
-        door = new TimedDoor(1);  
+        door = new TimedDoor(1);
     }
-    
+
     void TearDown() override {
         delete door;
     }
-    
+
     TimedDoor* door;
 };
 
 class DoorTimerAdapterTest : public ::testing::Test {
-protected:
+ protected:
     void SetUp() override {
         timedDoor = new TimedDoor(1);
         adapter = new DoorTimerAdapter(*timedDoor);
     }
-    
+
     void TearDown() override {
         delete adapter;
         delete timedDoor;
     }
-    
+
     TimedDoor* timedDoor;
     DoorTimerAdapter* adapter;
 };
@@ -83,7 +85,7 @@ TEST_F(TimedDoorTest, ExceptionWhenDoorIsOpen) {
 }
 
 TEST_F(DoorTimerAdapterTest, AdapterTimeoutCallsThrowState) {
-    door->unlock();
+    timedDoor->unlock();
     EXPECT_THROW(adapter->Timeout(), std::runtime_error);
 }
 
@@ -106,7 +108,7 @@ TEST(MockTimerClientTest, MockTimeoutCallTest) {
     MockTimerClient mockClient;
     EXPECT_CALL(mockClient, Timeout())
         .Times(1);
-    
+
     mockClient.Timeout();
     Mock::VerifyAndClearExpectations(&mockClient);
 }
@@ -114,7 +116,7 @@ TEST(MockTimerClientTest, MockTimeoutCallTest) {
 TEST(TimedDoorDifferentTimeoutsTest, DifferentTimeoutValues) {
     TimedDoor door5(5);
     TimedDoor door10(10);
-    
+
     EXPECT_EQ(door5.getTimeOut(), 5);
     EXPECT_EQ(door10.getTimeOut(), 10);
 }
@@ -128,6 +130,6 @@ TEST_F(TimedDoorTest, NoExceptionAfterClosingDoor) {
 }
 
 TEST_F(DoorTimerAdapterTest, AdapterNoExceptionOnClosedDoor) {
-    door->lock();
+    timedDoor->lock();
     EXPECT_NO_THROW(adapter->Timeout());
 }
