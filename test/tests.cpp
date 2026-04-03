@@ -12,19 +12,19 @@ using ::testing::Mock;
 using ::testing::Return;
 
 class MockTimerClient : public TimerClient {
- public: 
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class MockDoor : public Door {
- public: 
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
- protected: 
+ protected:
     void SetUp() override {
         door = new TimedDoor(1);
     }
@@ -35,7 +35,7 @@ class TimedDoorTest : public ::testing::Test {
 };
 
 class DoorTimerAdapterTest : public ::testing::Test {
- protected: 
+ protected:
     void SetUp() override {
         timedDoor = new TimedDoor(1);
         adapter = new DoorTimerAdapter(*timedDoor);
