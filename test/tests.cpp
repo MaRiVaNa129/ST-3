@@ -1,14 +1,11 @@
 // Copyright 2021 GHA Test Team
-
-#include "TimedDoor.h"
-
-#include <chrono>
-#include <cstdint>
-#include <stdexcept>
-#include <thread>
-
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <cstdint>
+#include <thread>
+#include <chrono>
+#include <future>
+#include "TimedDoor.h"
 
 using ::testing::_;
 using ::testing::Mock;
@@ -29,7 +26,7 @@ class MockDoor : public Door {
 class TimedDoorTest : public ::testing::Test {
  protected:
     void SetUp() override {
-        door = new TimedDoor(1);
+        door = new TimedDoor(100);
     }
 
     void TearDown() override {
@@ -42,7 +39,7 @@ class TimedDoorTest : public ::testing::Test {
 class DoorTimerAdapterTest : public ::testing::Test {
  protected:
     void SetUp() override {
-        timedDoor = new TimedDoor(1);
+        timedDoor = new TimedDoor(100);
         adapter = new DoorTimerAdapter(*timedDoor);
     }
 
